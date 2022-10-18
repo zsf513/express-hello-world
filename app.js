@@ -53,7 +53,7 @@ async function start(pressUrl) {
   console.log('result:',result);
 }
 
-app.get('/press',async (req,res)=>{
+app.get('/press',(req,res)=>{
 
   let query = req.query;
   let queryStr = '';
@@ -68,10 +68,16 @@ app.get('/press',async (req,res)=>{
   console.log('queryUrl:' + url);
   console.log('queryStr:' + queryStr);
 
-  start(url);
-  
-  res.send('你好，世界' + queryStr);
+  autocannon({
+    url: url,
+    connections: 10, //default
+    pipelining: 1, // default
+    duration: 10 // default
+  }, console.log);
 
+  res.json({
+    data: queryStr
+  });
 });
 
 module.exports = app;
