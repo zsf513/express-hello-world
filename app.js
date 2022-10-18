@@ -41,6 +41,18 @@ app.use('*', (req,res) => {
     .end();
 });
 
+// async/await
+async function start(pressUrl) {
+  console.log('url:' + pressUrl);
+  const result = await autocannon({
+    url: pressUrl,
+    connections: 10, //default
+    pipelining: 1, // default
+    duration: 8 // default
+  })
+  console.log('result:',result);
+}
+
 app.get('/press',async (req,res)=>{
 
   let query = req.query;
@@ -56,13 +68,8 @@ app.get('/press',async (req,res)=>{
   console.log('queryUrl:' + url);
   console.log('queryStr:' + queryStr);
 
-  autocannon({
-    url: url,
-    connections: 10, //default
-    pipelining: 1, // default
-    duration: 5 // default,
-  }, console.log);
-
+  start(url);
+  
   res.send('你好，世界' + queryStr);
 
 });
