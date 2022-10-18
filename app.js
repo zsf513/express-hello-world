@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require("path");
-const app = express()
+const autocannon = require('autocannon');
+const app = express();
 
 // #############################################################################
 // Logs all request paths and method
@@ -21,8 +22,8 @@ var options = {
   index: ['index.html'],
   maxAge: '1m',
   redirect: false
-}
-app.use(express.static('public', options))
+};
+app.use(express.static('public', options));
 
 // #############################################################################
 // Catch all handler for all other request.
@@ -37,7 +38,34 @@ app.use('*', (req,res) => {
       cookies: req.cookies,
       params: req.params
     })
-    .end()
-})
+    .end();
+});
 
-module.exports = app
+app.get('/press',async (req,res)=>{
+
+  let query = req.query;
+  let queryStr = '';
+  for(key in query){
+    queryStr += key + '=' + query[key] + ',';
+  }
+  if(queryStr.lastIndexOf(',') == queryStr.length -1){
+    queryStr = queryStr.substring(0, queryStr.lastIndexOf(','));
+  }
+
+  let url = query['url'];
+  console.log('queryUrl:' + url);
+  console.log('queryStr:' + queryStr);
+
+  autocannon({
+    url: url,
+    connections: 10, //default
+    pipelining: 1, // default
+    duration: 5, // default,
+    socketPath: '/tmp'
+  }, console.log);
+
+  res.send('你好，世界' + queryStr);
+
+});
+
+module.exports = app;
