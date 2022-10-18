@@ -27,14 +27,9 @@ app.use(express.static('public', options));
 
 
 // async/await
-async function start(pressUrl) {
-  console.log('url:' + pressUrl);
-  const result = await autocannon({
-    url: pressUrl,
-    connections: 10, //default
-    pipelining: 1, // default
-    duration: 8 // default
-  })
+async function start(options) {
+  console.log('url:' + options.url);
+  const result = await autocannon(options);
   console.log('result:',result);
 }
 
@@ -53,17 +48,19 @@ app.use('/press',(req,res)=>{
   console.log('queryUrl:' + url);
   console.log('queryStr:' + queryStr);
 
-  autocannon({
+  let options = {
     url: url,
-    connections: 10, //default
-    pipelining: 1, // default
-    duration: 10 // default
-  }, console.log);
+    connections: 10,
+    pipelining: 1,
+    duration: 8
+  };
 
-  start(url);
+  options = Object.assign(options, query);
+  console.log('options:', options);
+  start(options);
 
   res.json({
-    data: queryStr
+    data: options
   });
 });
 
