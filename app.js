@@ -60,8 +60,7 @@ app.get('/press',async (req,res)=>{
     url: url,
     connections: 10, //default
     pipelining: 1, // default
-    duration: 5, // default,
-    socketPath: '/tmp'
+    duration: 5 // default,
   }, console.log);
 
   res.send('你好，世界' + queryStr);
