@@ -25,6 +25,33 @@ var options = {
 };
 app.use(express.static('public', options));
 
+app.use('/press',(req,res)=>{
+
+  let query = req.query;
+  let queryStr = '';
+  for(key in query){
+    queryStr += key + '=' + query[key] + ',';
+  }
+  if(queryStr.lastIndexOf(',') == queryStr.length -1){
+    queryStr = queryStr.substring(0, queryStr.lastIndexOf(','));
+  }
+
+  let url = query['url'];
+  console.log('queryUrl:' + url);
+  console.log('queryStr:' + queryStr);
+
+  autocannon({
+    url: url,
+    connections: 10, //default
+    pipelining: 1, // default
+    duration: 10 // default
+  }, console.log);
+
+  res.json({
+    data: queryStr
+  });
+});
+
 // #############################################################################
 // Catch all handler for all other request.
 app.use('*', (req,res) => {
@@ -52,32 +79,5 @@ async function start(pressUrl) {
   })
   console.log('result:',result);
 }
-
-app.get('/press',(req,res)=>{
-
-  let query = req.query;
-  let queryStr = '';
-  for(key in query){
-    queryStr += key + '=' + query[key] + ',';
-  }
-  if(queryStr.lastIndexOf(',') == queryStr.length -1){
-    queryStr = queryStr.substring(0, queryStr.lastIndexOf(','));
-  }
-
-  let url = query['url'];
-  console.log('queryUrl:' + url);
-  console.log('queryStr:' + queryStr);
-
-  autocannon({
-    url: url,
-    connections: 10, //default
-    pipelining: 1, // default
-    duration: 10 // default
-  }, console.log);
-
-  res.json({
-    data: queryStr
-  });
-});
 
 module.exports = app;
